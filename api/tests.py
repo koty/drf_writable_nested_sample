@@ -1,8 +1,5 @@
 from rest_framework.test import APITestCase
 
-from api.models import User
-from api.serializers import UserSerializer
-
 
 def get_initial_data():
     return {
@@ -69,10 +66,3 @@ class MyTest(APITestCase):
         self.assertEqual('Message 1 hoge', result.data['profile']['messages'][0]['message'])
         self.assertEqual('Message 4', result.data['profile']['messages'][2]['message'])
         self.assertNotEqual(message_2_pk, result.data['profile']['messages'][2]['pk'])
-
-    def test_create_accesskey(self):
-        data = {
-            'key': 'my-access-key1',
-        }
-        result = self.client.post('/api/accesskeys', data=data, format='json')
-        self.assertEqual(201, result.status_code)
