@@ -10,7 +10,7 @@ class Site(models.Model):
     url = models.CharField(max_length=100)
 
 
-class User(models.Model):
+class MyUser(models.Model):
     username = models.CharField(max_length=100)
     user_avatar = models.ForeignKey(
         'Avatar',
@@ -25,13 +25,13 @@ class AccessKey(models.Model):
 
 class Profile(models.Model):
     sites = models.ManyToManyField(Site)
-    user = models.OneToOneField(User)
-    access_key = models.ForeignKey(AccessKey, null=True)
+    user = models.OneToOneField(MyUser, on_delete=models.CASCADE)
+    access_key = models.ForeignKey(AccessKey, null=True, on_delete=models.CASCADE)
 
 
 class Avatar(models.Model):
     image = models.CharField(max_length=100)
-    profile = models.ForeignKey(Profile, related_name='avatars',)
+    profile = models.ForeignKey(Profile, related_name='avatars', on_delete=models.CASCADE)
 
 
 class Tag(models.Model):
@@ -50,7 +50,17 @@ class TaggedItem(models.Model):
 
 class Team(models.Model):
     name = models.CharField(max_length=100)
-    members = models.ManyToManyField(User)
+    members = models.ManyToManyField(MyUser, through='TeamAssign')
+
+
+class TeamAssign(models.Model):
+    user = models.ForeignKey(MyUser, on_delete=models.CASCADE)
+    team = models.ForeignKey(Team, on_delete=models.CASCADE)
+    enable_from = models.DateField()
+    enable_to = models.DateField(null=True)
+
+    class Meta:
+        unique_together = (('user', 'team', ), )
 
 
 class CustomPK(models.Model):
@@ -58,7 +68,7 @@ class CustomPK(models.Model):
         primary_key=True,
     )
     user = models.ForeignKey(
-        User,
+        MyUser,
         on_delete=models.CASCADE,
         related_name='custompks',
     )
@@ -70,5 +80,5 @@ class Message(models.Model):
         default=uuid.uuid4,
         editable=False
     )
-    profile = models.ForeignKey(Profile, related_name='messages')
+    profile = models.ForeignKey(Profile, related_name='messages', on_delete=models.CASCADE)
     message = models.CharField(max_length=100)

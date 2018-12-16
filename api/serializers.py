@@ -59,7 +59,7 @@ class UserSerializer(WritableNestedModelSerializer):
     profile = ProfileSerializer(required=False, allow_null=True)
 
     class Meta:
-        model = models.User
+        model = models.MyUser
         fields = ('pk', 'profile', 'username',)
 
 
@@ -123,7 +123,7 @@ class UserWithCustomPKSerializer(WritableNestedModelSerializer):
     )
 
     class Meta:
-        model = models.User
+        model = models.MyUser
         fields = (
             'custompks',
             'username',
